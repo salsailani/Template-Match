@@ -15,7 +15,7 @@ def grayscale(picture): #grayscale function
       L=r+g+b/3 #gray
       out.putpixel((x,y), (int(L),int(L),int(L)))
 
-def compareOne(template,searchImage,x1,y1): #compare one function 
+def compareOne(template,searchImage,x1,y1): #compare one pixel function 
   SAD=0
   for x in range(widthT): #loop through x
     for y in range(heightT): #loop through y       
@@ -24,7 +24,7 @@ def compareOne(template,searchImage,x1,y1): #compare one function
       SAD=SAD+abs(g - g1) # sum of absolute difference
   return SAD
   
-def compareAll(template,searchImage): # compare all function
+def compareAll(template,searchImage): # compare all pixels function
   BIG = 1000000   # Big is this big because luminance never reaches this
   matrix = [[BIG for i in range(width)] for j in range(height)] #creating a matrix with big values for the bounds
   for y in range(width):  #loop through x
@@ -38,6 +38,8 @@ def compareAll(template,searchImage): # compare all function
     
 def find2Dmin(matrix): #minimum SAD and starting row and Col
   m=matrix[0][0] # first
+  x1=0
+  y1=0
   for x in range(len(matrix)):  #loop through x
     for y in range(len(matrix)): #loop through y 
       if matrix[x][y]<m: # check for each next one if less assign
@@ -46,18 +48,17 @@ def find2Dmin(matrix): #minimum SAD and starting row and Col
         y1=y #min col
   return (x1,y1)
              
-def displayMatch(searchImage, x1, y1, w1, h1): #call it and specify your color
+def displayMatch(searchImage, x1, y1, widthT, heightT): #call it and specify your color
   borderwidth=2 
   for y in range(width):  #loop through x
     for x in range(height):  #loop through pixels
-      r,g,b = searchImage.getpixel((x,y))
-      if x1-borderwidth<=x<=x1 and y<=y1+h1+borderwidth and y>=y1-borderwidth  : # left border
+      if x1-borderwidth<=x<=x1 and y<=y1+heightT+borderwidth and y>=y1-borderwidth  : # left border
         out.putpixel((x,y), 0)#set the border
-      if y1-borderwidth<=y<=y1 and x<=x1+w1 and x>=x1: # top border
+      if y1-borderwidth<=y<=y1 and x<=x1+widthT and x>=x1: # top border
         out.putpixel((x,y), 0) #set border
-      if x1+w1+borderwidth>=x>=x1+w1 and y<=y1+h1+borderwidth and y>=y1-borderwidth: #right border
+      if x1+widthT+borderwidth>=x>=x1+widthT and y<=y1+heightT+borderwidth and y>=y1-borderwidth: #right border
         out.putpixel((x,y), 0)    #set border
-      if y1+h1+borderwidth>=y>=y1+h1 and x<=x1+w1 and x>=x1: #bottom border
+      if y1+heightT+borderwidth>=y>=y1+heightT and x<=x1+widthT and x>=x1: #bottom border
         out.putpixel((x,y), 0)  #set border
    
 def findWaldo(template, searchImage): #driver function
@@ -65,7 +66,7 @@ def findWaldo(template, searchImage): #driver function
   grayscale(searchImage) #calling grayscale  
   matrix = compareAll(template,searchImage) #we assign a global variable to the matrix to use in find2Dmin function 
   (x1,y1)= find2Dmin(matrix) #assign global valuables to row and col to use in displaymatch
-  displayMatch(searchImage, x1, y1, w1, h1) #calling display match
-  return out
+  displayMatch(searchImage, x1, y1, widthT, heightT) #calling display match
+  out.show()
 
 findWaldo(template,searchImage)
